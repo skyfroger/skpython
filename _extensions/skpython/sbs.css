@@ -1,0 +1,322 @@
+:root {
+    --primary-color: #0f82f2;
+    --wrong-color: #cd0e66;
+    --success-color: #0a8f6e;
+    --warning-color: #d95b43;
+    --bg-color: #fcfcfa;
+    --text-color: #333;
+    --border-radius: 0.25rem;
+    --transition: 0.3s ease;
+    --hover-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    --q-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+        rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    --input-shadow: rgba(0, 0, 0, 0.4) 0px 1px 2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 6px -2px,
+        rgba(0, 0, 0, 0.2) 0px -2px 0px inset;
+}
+
+.sbs__action {
+    border-radius: 0.5em;
+    /* background-color: #edfaef; */
+    background: rgb(237, 250, 239);
+    background: linear-gradient(
+        0deg,
+        rgba(237, 250, 239, 0.4) 0%,
+        rgba(237, 250, 239, 1) 100%
+    );
+    padding: 0.7em;
+    margin-bottom: 1.5em;
+}
+
+.sbs__data {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+.sbs__completed {
+    opacity: 0.5;
+    filter: grayscale(80%);
+}
+
+.sbs__task {
+    opacity: 1;
+    transition: border-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    border-radius: 0.5em;
+    background: rgb(237, 250, 239);
+    background: linear-gradient(0deg, #0f80f209 0%, #0f80f227 100%);
+    padding: 0 0.7em 0.7em 0.7em;
+    margin-bottom: 1.5em;
+}
+.sbs__task__completed {
+    opacity: 0.7;
+    border-color: var(--success-color);
+}
+.badge__container {
+    text-align: center;
+    margin-bottom: 0.4em;
+}
+.sbs__task .sbs__badge {
+    border-radius: 0 0 0.5em 0.5em;
+    font-weight: bold;
+    display: inline-block;
+    background-color: var(--primary-color);
+    padding: 0.2em;
+    color: white;
+    box-shadow: var(--q-shadow);
+    transition: background-color 0.15s ease-in-out;
+}
+.sbs__task__completed.sbs__task .sbs__badge {
+    background-color: var(--success-color);
+}
+
+/* Кнопка сброса шагов */
+.sbs__button {
+    border: none;
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.3em;
+    border-radius: var(--border-radius);
+    transition: box-shadow 0.5s ease, background-color 0.5s ease;
+}
+
+.sbs__button:hover {
+    box-shadow: var(--hover-shadow);
+    background-color: #12ab85;
+}
+
+/* Стили для чекбокса */
+
+.checkbox-wrapper-19 {
+    box-sizing: border-box;
+    --background-color: #fff;
+    --checkbox-height: 25px;
+    --check-color: #397367;
+}
+
+@-moz-keyframes dothabottomcheck-19 {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+    }
+}
+
+@-webkit-keyframes dothabottomcheck-19 {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+    }
+}
+
+@keyframes dothabottomcheck-19 {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+    }
+}
+
+@keyframes dothatopcheck-19 {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+@-webkit-keyframes dothatopcheck-19 {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+@-moz-keyframes dothatopcheck-19 {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+.checkbox-wrapper-19 input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-wrapper-19 .check-box {
+    height: var(--checkbox-height);
+    width: var(--checkbox-height);
+    background-color: transparent;
+    border: calc(var(--checkbox-height) * 0.1) solid #737373;
+    border-radius: 5px;
+    position: relative;
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-transition: border-color ease 0.2s;
+    -o-transition: border-color ease 0.2s;
+    -webkit-transition: border-color ease 0.2s;
+    transition: border-color ease 0.2s;
+    cursor: pointer;
+}
+.checkbox-wrapper-19 .check-box::before,
+.checkbox-wrapper-19 .check-box::after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    height: 0;
+    width: calc(var(--checkbox-height) * 0.2);
+    background-color: var(--check-color);
+    display: inline-block;
+    -moz-transform-origin: left top;
+    -ms-transform-origin: left top;
+    -o-transform-origin: left top;
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+    border-radius: 5px;
+    content: " ";
+    -webkit-transition: opacity ease 0.5;
+    -moz-transition: opacity ease 0.5;
+    transition: opacity ease 0.5;
+}
+.checkbox-wrapper-19 .check-box::before {
+    top: calc(var(--checkbox-height) * 0.72);
+    left: calc(var(--checkbox-height) * 0.41);
+    box-shadow: 0 0 0 calc(var(--checkbox-height) * 0.05)
+        var(--background-color);
+    -moz-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    -o-transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}
+.checkbox-wrapper-19 .check-box::after {
+    top: calc(var(--checkbox-height) * 0.37);
+    left: calc(var(--checkbox-height) * 0.05);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.checkbox-wrapper-19 input[type="checkbox"]:checked + .check-box,
+.checkbox-wrapper-19 .check-box.checked {
+    border-color: var(--check-color);
+}
+.checkbox-wrapper-19 input[type="checkbox"]:checked + .check-box::after,
+.checkbox-wrapper-19 .check-box.checked::after {
+    height: calc(var(--checkbox-height) / 2);
+    -moz-animation: dothabottomcheck-19 0.2s ease 0s forwards;
+    -o-animation: dothabottomcheck-19 0.2s ease 0s forwards;
+    -webkit-animation: dothabottomcheck-19 0.2s ease 0s forwards;
+    animation: dothabottomcheck-19 0.2s ease 0s forwards;
+}
+.checkbox-wrapper-19 input[type="checkbox"]:checked + .check-box::before,
+.checkbox-wrapper-19 .check-box.checked::before {
+    height: calc(var(--checkbox-height) * 1.2);
+    -moz-animation: dothatopcheck-19 0.4s ease 0s forwards;
+    -o-animation: dothatopcheck-19 0.4s ease 0s forwards;
+    -webkit-animation: dothatopcheck-19 0.4s ease 0s forwards;
+    animation: dothatopcheck-19 0.4s ease 0s forwards;
+}
+
+/* Digital */
+
+span.pin__data {
+    cursor: pointer;
+    line-height: 1.4rem;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+    padding: 0 7px;
+    border-radius: 0.2em;
+    margin: 0;
+    color: #fff;
+    margin-right: 3px;
+    display: inline-block;
+    transform: skew(-10deg);
+    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out,
+        color 0.2s ease-in-out;
+}
+
+span.pin__data:hover {
+    box-shadow: var(--input-shadow);
+}
+
+span.pin__data.gpio {
+    background-color: #8d4ba3;
+}
+
+span.pin__data.power {
+    background-color: #cb2b2b;
+}
+
+span.pin__data.gnd {
+    background-color: #333739;
+}
+
+span.scheme__element {
+    cursor: pointer;
+    line-height: 1.4rem;
+    background-color: #3abeff;
+    padding: 0 0.2em;
+    border-radius: 0.2em;
+    margin: 0;
+    color: #fff;
+    margin-right: 3px;
+    display: inline-block;
+    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out,
+        color 0.2s ease-in-out;
+}
+
+.hl-container {
+    position: relative;
+    /* display: inline-block; */
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+}
+
+.highlight {
+    position: absolute;
+    background-color: rgba(255, 193, 0, 0.2);
+    border: 2px solid #ffc100;
+    border-radius: 0.4em;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.show-highlight,
+.highlight:hover {
+    opacity: 1;
+}
+
+.show-element-highlight,
+span.scheme__element:hover {
+    color: #343a40 !important;
+    background-color: #ffc100 !important;
+    box-shadow: var(--input-shadow);
+}
+
+.leader-line {
+    z-index: 1000;
+}
