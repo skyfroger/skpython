@@ -1,0 +1,146 @@
+:root {
+    --terminal-bg: #51576d;
+    --terminal-text: #f5f5f5;
+    --success-color-sk: #60a561;
+    --error-color-sk: #e34a6f;
+    --running-color: #00a6ed;
+    --border-radius: 0.2rem;
+    --shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+.skulpt-editor {
+    margin: 1em 0;
+    display: grid;
+    column-gap: 0.25em;
+    grid-template-columns: 35px 1fr;
+}
+
+.skulpt-editor .output__turtle {
+    margin-top: 0.3em;
+}
+
+.skulpt-editor .output__turtle canvas {
+    margin: 0 auto;
+}
+
+.skulpt-editor .output__turtle canvas:first-of-type {
+    border: 1px solid var(--terminal-bg);
+}
+
+.canvas-grid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23fff' /%3E%3Crect x='50%' width='1' height='100%' fill='rgb(203 213 225)' /%3E%3Crect y='50%' width='100%' height='1' fill='rgb(203 213 225)' /%3E%3C/svg%3E%0A");
+    width: 400px;
+    height: 300px;
+    position: relative;
+    display: block;
+    /* margin-top: -600px; */
+    z-index: 5;
+}
+
+.skulpt-editor div.ide .ace_editor {
+    margin-bottom: 0.3em;
+    border: 1px solid lightgray;
+}
+.skulpt-editor pre input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
+    caret-color: var(--terminal-text);
+}
+
+.skulpt-editor pre.output__container {
+    display: none;
+    border-radius: var(--border-radius);
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+    background-color: var(--terminal-bg);
+    color: var(--terminal-text);
+    padding: 0.8em;
+    min-height: 25px;
+    max-height: 250px;
+    margin: 0;
+    overflow: auto;
+    transition: border 0.3s ease-in-out;
+}
+
+.skulpt-editor button:hover {
+    box-shadow: var(--shadow);
+    filter: brightness(110%);
+}
+
+button.run {
+    background-color: var(--success-color-sk);
+    border-color: var(--success-color-sk);
+    color: white;
+}
+
+button.stop {
+    height: 35px;
+    background-color: var(--error-color-sk);
+    border-color: var(--error-color-sk);
+    color: white;
+}
+
+button.general {
+    background-color: white;
+    border: 1px solid var(--running-color) !important;
+    color: var(--running-color) !important;
+}
+
+.sk__dropdown {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+}
+.sk__dropdown-button {
+    position: absolute;
+    font-size: 0.9rem;
+    font-weight: bold;
+    width: 35px;
+    height: 35px;
+    background-color: white;
+    border: 1px solid var(--running-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: var(--border-radius);
+    z-index: 100;
+}
+.sk__dropdown-button.expanded {
+    width: 140px;
+}
+.sk__dropdown-menu {
+    /* margin-top: 0.2em; */
+    position: absolute;
+    top: 35px;
+    left: 0;
+    min-width: 140px;
+    z-index: 999;
+    background-color: white;
+}
+.sk__dropdown-menu button {
+    width: 100%;
+    margin-bottom: 0.1em;
+    text-align: center;
+    border: none;
+    /* background-color: #4caf50; */
+    color: white;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sk__dropdown-menu button:last-child {
+    margin-bottom: 0;
+}
