@@ -179,11 +179,11 @@ function createAceEditor(element, content) {
 
         // Добавляем небольшой отступ
         newHeight += editor.renderer.scrollBar.getWidth();
-        // максимальная высота - 350px, минимальная  - 35px
-        if (newHeight > 35) {
+        // максимальная высота - 350px, минимальная  - 45px
+        if (newHeight > 40) {
             editorDiv.style.height = (newHeight < 350 ? newHeight : 350) + "px";
         } else {
-            editorDiv.style.height = "35px";
+            editorDiv.style.height = "40px";
         }
         editor.resize();
     }

@@ -54,6 +54,18 @@
     caret-color: var(--terminal-text);
 }
 
+/* 
+    Высота и ширина полосы прокрутки меньше стандартных 15 px.
+    Помогает на маленьких экранах.
+*/
+.skulpt-editor div.ide .ace_scrollbar-v {
+    width: 10px !important;
+}
+
+.skulpt-editor div.ide .ace_scrollbar-h {
+    height: 10px !important;
+}
+
 .skulpt-editor pre.output__container {
     display: none;
     border-radius: var(--border-radius);
@@ -83,16 +95,14 @@ button.run {
 }
 
 button.stop {
-    height: 35px;
     background-color: var(--error-color-sk);
     border-color: var(--error-color-sk);
     color: white;
 }
 
 button.general {
-    background-color: white;
-    border: 1px solid var(--running-color) !important;
-    color: var(--running-color) !important;
+    background-color: var(--running-color);
+    color: white !important;
 }
 
 .sk__dropdown {
@@ -101,11 +111,10 @@ button.general {
     width: 40px;
 }
 .sk__dropdown-button {
-    position: absolute;
+    /* position: absolute; */
     font-size: 0.9rem;
-    font-weight: bold;
     width: 35px;
-    height: 35px;
+    height: 25px;
     background-color: white;
     border: 1px solid var(--running-color);
     color: white;
@@ -117,30 +126,59 @@ button.general {
     border-radius: var(--border-radius);
     z-index: 100;
 }
-.sk__dropdown-button.expanded {
-    width: 140px;
-}
-.sk__dropdown-menu {
-    /* margin-top: 0.2em; */
-    position: absolute;
-    top: 35px;
-    left: 0;
-    min-width: 140px;
-    z-index: 999;
-    background-color: white;
-}
-.sk__dropdown-menu button {
-    width: 100%;
-    margin-bottom: 0.1em;
-    text-align: center;
-    border: none;
-    /* background-color: #4caf50; */
-    color: white;
+
+.menu-trigger {
+    width: 35px;
+    height: 10px;
+    margin-top: 5px;
     cursor: pointer;
-    border-radius: var(--border-radius);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.sk__dropdown-menu button:last-child {
-    margin-bottom: 0;
+.menu-icon {
+    display: flex; /* Используем flexbox для управления расположением точек */
+    gap: 4px; /* Добавляем промежуток между точками */
+    transition: gap 0.25s ease-in-out;
+}
+
+.menu-icon:hover {
+    gap: 5px;
+}
+
+.dot {
+    width: 6px; /* Размер точки */
+    height: 6px;
+    border-radius: 50%; /* Делаем элемент круглым */
+    background-color: #a6aebf; /* Цвет точки */
+}
+
+/* Стиль меню */
+.tippy-box[data-theme~="skmenu"] {
+    border-radius: 0.4rem;
+    background-color: var(--quarto-body-bg);
+    background: linear-gradient(
+        0deg,
+        rgb(255, 255, 255) 0%,
+        rgb(241, 249, 243) 100%
+    );
+    color: var(--quarto-body-color);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow);
+}
+.tippy-box[data-theme~="skmenu"][data-placement^="top"] > .tippy-arrow::before {
+    border-top-color: var(--quarto-body-bg);
+}
+.tippy-box[data-theme~="skmenu"][data-placement^="bottom"]
+    > .tippy-arrow::before {
+    border-bottom-color: var(--quarto-body-bg);
+}
+.tippy-box[data-theme~="skmenu"][data-placement^="left"]
+    > .tippy-arrow::before {
+    border-left-color: var(--quarto-body-bg);
+}
+.tippy-box[data-theme~="skmenu"][data-placement^="right"]
+    > .tippy-arrow::before {
+    border-right-color: var(--quarto-body-bg);
 }

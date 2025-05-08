@@ -30,15 +30,6 @@ function createSkulptIDE(block)
       open: false,
       timer: null,
       editorId: ]] .. idesCounter .. [[,
-      startTime(){
-        this.timer = setTimeout(()=>{
-          this.open = true;
-        }, 1500);
-      },
-      stopTimer(){
-        clearTimeout(this.timer);
-        this.open = false;
-      },
       saveToFile(index){
         const element = document.createElement('a');
 
@@ -57,35 +48,55 @@ function createSkulptIDE(block)
         document.body.removeChild(element);
       }
     }">
-    <div class="sk__dropdown"
-            x-on:mouseleave="stopTimer">
+    <div class="sk__dropdown">
       <button
-        :class="{ 'expanded': open }"
-        x-on:mouseenter="startTime"
         class="sk__dropdown-button run"
         type="button"
-        x-on:click="runit(editorId, `skulpt-output${editorId}`, `skulpt-canvas${editorId}`); open=false; "
+        x-on:click="runit(editorId, `skulpt-output${editorId}`, `skulpt-canvas${editorId}`);"
       >
         <span>▷</span>
-        <span x-show="open" x-transition x-cloak>
-          Запустить
-        </span>
       </button>
-      <div x-show="open" x-cloak x-transition class="sk__dropdown-menu">
-            <button class="stop" type="button" x-on:click="stopit(`skulpt-output${editorId}`); open=false;">▢ Остановить</button>
-            <button class="general" type="button" x-on:click="
-              editors[editorId].setValue($refs.original.innerText);
-              open=false;
-            ">↻ Восстановить</button>
-            <button class="general" type="button" x-on:click="
-              navigator.clipboard.writeText(editors[editorId].getValue());
-              open=false;
-            ">✎ Скопировать</button>
-            <button class="general" type="button" x-on:click="
-              saveToFile(editorId);
-              open=false;
-            ">🖪 Сохранить</button>
+
+      <div id="skulpt-hamburger-]] .. idesCounter .. [[" class="menu-trigger">
+        <div class="menu-icon">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
       </div>
+      <div id="skulpt-menu-]] .. idesCounter .. [[" style="display: none;">
+            <button class="sk__dropdown-button stop" type="button" title="Остановить" x-on:click="
+              stopit(`skulpt-output${editorId}`);
+              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
+            ">▢</button>
+            <button class="sk__dropdown-button general" type="button" title="Восстановить" x-on:click="
+              editors[editorId].setValue($refs.original.innerText);
+              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
+            ">↻</button>
+            <button class="sk__dropdown-button general" type="button" title="Скопировать" x-on:click="
+              navigator.clipboard.writeText(editors[editorId].getValue());
+              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
+            ">✎</button>
+            <button class="sk__dropdown-button general" type="button" title="Сохранить файл" x-on:click="
+              saveToFile(editorId);
+              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
+            ">🖪</button>
+      </div>
+      <script>
+        const template]] .. idesCounter .. [[ = document.getElementById("skulpt-menu-]] .. idesCounter .. [[");
+
+        tippy("#skulpt-hamburger-]] .. idesCounter .. [[", {
+          content: template]] .. idesCounter .. [[.innerHTML,
+          allowHTML: true,
+          interactive: true,
+          interactiveBorder: 30,
+          interactiveDebounce: 75,
+          trigger: 'click',
+          maxWidth: 'none',
+          theme: 'skmenu',
+          placement: 'right',
+        });
+      </script>
     </div> <!-- конец блока с кнопками -->
     <div> <!-- Начало основного блока -->
       <div class="ide">
