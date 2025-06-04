@@ -135,16 +135,17 @@ button.general {
     display: flex;
     align-items: center;
     justify-content: space-around;
+    scale: 1;
+    transition: scale 0.3s ease-in-out;
+}
+
+.menu-trigger:hover {
+    scale: 1.15;
 }
 
 .menu-icon {
     display: flex; /* Используем flexbox для управления расположением точек */
     gap: 4px; /* Добавляем промежуток между точками */
-    transition: gap 0.25s ease-in-out;
-}
-
-.menu-icon:hover {
-    gap: 5px;
 }
 
 .dot {
@@ -152,6 +153,11 @@ button.general {
     height: 6px;
     border-radius: 50%; /* Делаем элемент круглым */
     background-color: #a6aebf; /* Цвет точки */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.menu-trigger:hover .dot {
+    background-color: var(--terminal-bg);
 }
 
 /* Стиль меню */

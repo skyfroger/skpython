@@ -120,12 +120,12 @@ function createSkulptIDE(block)
 end
 
 if quarto.doc.isFormat("html:js") then
-  quarto.doc.include_text("in-header",
-    [[<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>]])
   CodeBlock = function(block)
     -- # Вопрос с одним правильным ответом # --
     if block.classes:includes("sk-python") then -- если div содержит нужный стиль - обрабатываем разметку
+      quarto.doc.include_text("in-header",
+        [[<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>]])
       writeEnvironments()
       return createSkulptIDE(block)
     end
