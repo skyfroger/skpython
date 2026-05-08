@@ -4,6 +4,34 @@ const editors = [];
 // Глобальная переменная для отслеживания текущего выполняющегося редактора
 let currentRunningEditor = null;
 
+let tsParser = null; // экземпляр Parser
+let tsParserReady = false; // флаг готовности
+
+async function initTreeSitter() {
+    try {
+        // TreeSitter — глобальный объект, загруженный через <script> в <head>
+        await TreeSitter.init({
+            // Указываем, где искать tree-sitter.wasm (рядом с JS на unpkg)
+            locateFile(fileName) {
+                return `https://unpkg.com/web-tree-sitter@0.24.7/${fileName}`;
+            },
+        });
+
+        tsParser = new TreeSitter();
+
+        // Загружаем грамматику Python
+        const Python = await TreeSitter.Language.load(
+            "https://unpkg.com/tree-sitter-python@0.23.6/tree-sitter-python.wasm",
+        );
+        tsParser.setLanguage(Python);
+
+        tsParserReady = true;
+        console.log("web-tree-sitter: парсер Python готов");
+    } catch (err) {
+        console.error("web-tree-sitter: ошибка инициализации", err);
+    }
+}
+
 // Функция для остановки выполнения всех редакторов, кроме текущего
 function stopAllOtherEditors(currentEditorIndex) {
     editors.forEach((editor, index) => {
@@ -149,6 +177,7 @@ function runit(editorIndex, outputContainerId, canvasOutputId) {
 
 function createMonacoEditor(element, content) {
     const editorDiv = document.createElement("div"); // Создаем новый div для редактора
+    editorDiv.style.width = "100%"; // максимальная высота редактора - 14 строк
     editorDiv.style.maxHeight = "274px"; // максимальная высота редактора - 14 строк
     element.appendChild(editorDiv);
 
@@ -176,12 +205,70 @@ function createMonacoEditor(element, content) {
         editor.layout();
     }
 
-    function validatePython() {
+    async function validatePython() {
         const model = editor.getModel();
         if (!model) return;
 
         const code = model.getValue();
-        console.log("validate logic", code);
+        // Ждём готовности парсера (WASM может ещё грузиться)
+        if (!tsParserReady) {
+            console.log(
+                "web-tree-sitter: парсер ещё не готов, пропускаем валидацию",
+            );
+            return;
+        }
+
+        // Парсим код и получаем дерево
+        const tree = tsParser.parse(code);
+        const rootNode = tree.rootNode;
+
+        console.log("AST тип корня:", rootNode.type); // "module"
+        console.log("Дочерние узлы:", rootNode.childCount);
+        console.log("Синтаксические ошибки:", rootNode.hasError);
+
+        const errors = collectErrorNodes(rootNode);
+        console.log("Найдены ошибки:", errors);
+
+        const funcNames = collectFunctionNames(rootNode);
+        console.log("Найдены функции:", funcNames);
+
+        // Дерево нужно освобождать вручную, чтобы не утекала память WASM-кучи
+        tree.delete();
+    }
+
+    // Рекурсивный обход: возвращает имена всех function_definition узлов
+    function collectFunctionNames(node) {
+        const names = new Set();
+        (function walk(n) {
+            if (n.type === "call") {
+                const nameNode = n.childForFieldName("function");
+                if (nameNode) names.add(nameNode.text);
+            }
+            for (let i = 0; i < n.childCount; i++) {
+                walk(n.child(i));
+            }
+        })(node);
+        return names;
+    }
+
+    // Рекурсивный обход: возвращает все узлы типа ERROR или MISSING
+    function collectErrorNodes(node) {
+        const result = [];
+        (function walk(n) {
+            if (n.type === "ERROR" || n.isMissing) {
+                result.push({
+                    type: n.type,
+                    isMissing: n.isMissing,
+                    startPosition: n.startPosition, // { row, column }
+                    endPosition: n.endPosition,
+                    text: n.text,
+                });
+            }
+            for (let i = 0; i < n.childCount; i++) {
+                walk(n.child(i));
+            }
+        })(node);
+        return result;
     }
 
     // Вызываем при первой загрузке и при каждом изменении текста
@@ -206,6 +293,8 @@ function getEditorContent(index) {
 
 // Создаём редакторы только после полной загрузки страницы
 window.onload = function () {
+    initTreeSitter();
+
     require.config({
         paths: { vs: "https://unpkg.com/monaco-editor@latest/min/vs" },
     });
