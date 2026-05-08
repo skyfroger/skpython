@@ -1,0 +1,10 @@
+---
+title: "Формирующее оценивание"
+filters:
+  - skpython
+---
+
+```sk-python
+for letter in "Привет, мир":
+    print(letter)
+```

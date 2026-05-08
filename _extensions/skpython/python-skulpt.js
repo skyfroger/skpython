@@ -101,6 +101,7 @@ function runit(editorIndex, outputContainerId, canvasOutputId) {
     const prog = getEditorContent(editorIndex);
     Sk.pre = outputContainerId;
     Sk.configure({
+        __future__: Sk.python3,
         output: output(outputContainerId),
         read: builtinRead,
         inputfun: input(outputContainerId),
