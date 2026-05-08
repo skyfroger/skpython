@@ -5,6 +5,21 @@ filters:
 ---
 
 ```sk-python
-for letter in "Привет, мир":
-    print(letter)
+for i in range(10):
+    if i % 2 == 0:
+        continue
+    print(i)
+```
+
+
+```sk-python
+n = int(input("Количество чисел: "))
+
+summ = 0
+
+for i in range(n):
+    a = int(input("Слагаемое: "))
+    summ = summ + a
+    
+print(f"Сумма равна {summ}")
 ```

@@ -128,7 +128,7 @@ function runit(editorIndex, outputContainerId, canvasOutputId) {
                         throw new Error("Execution interrupted");
                     }
                 },
-            }
+            },
         )
         .catch((err) => {
             // показываем окно вывода, если обнаружена ошибка
@@ -147,54 +147,53 @@ function runit(editorIndex, outputContainerId, canvasOutputId) {
         });
 }
 
-function createAceEditor(element, content) {
-    // Создаем новый div для редактора
-    var editorDiv = document.createElement("div");
+function createMonacoEditor(element, content) {
+    const editorDiv = document.createElement("div"); // Создаем новый div для редактора
+    editorDiv.style.maxHeight = "274px"; // максимальная высота редактора - 14 строк
     element.appendChild(editorDiv);
 
-    // Создаем редактор Ace
-    var editor = ace.edit(editorDiv);
-    editor.setTheme("ace/theme/nord");
-    editor.session.setMode("ace/mode/python");
-    editor.setValue(content);
-
-    // Отключаем перенос строк для точного подсчета
-    editor.session.setUseWrapMode(false);
-
-    editor.setOptions({
-        fontSize: "0.95rem",
-        highlightActiveLine: false,
-        highlightGutterLine: false,
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: false,
+    var editor = monaco.editor.create(editorDiv, {
+        value: content,
+        language: "python",
+        theme: "vs", // options: 'vs', 'vs-dark', 'hc-black'
+        automaticLayout: true, // helps resizing
+        scrollBeyondLastLine: false,
+        quickSuggestions: false, // Отключает подсказки при сонаправленном вводе
+        suggestOnTriggerCharacters: false, // Отключает подсказки при вводе спецсимволов (например, точки)
+        wordBasedSuggestions: "off", // Отключает подсказки на основе уже введенных слов
+        parameterHints: { enabled: false }, // Отключает подсказки по параметрам функций
+        snippetSuggestions: "none",
+        minimap: {
+            enabled: false, // Полностью скрывает мини-карту справа
+        },
+        glyphMargin: false, // Отключает самое левое поле для иконок (брейкпоинты, варнинги)
+        folding: false, // Отключает кнопки сворачивания кода (стрелочки [-] / [+])
+        lineNumbersMinChars: 3,
     });
-
-    editor.setValue(content, -1); // -1 перемещает курсор в начало
-
-    // Функция для обновления высоты редактора
     function updateEditorHeight() {
-        var lineHeight = editor.renderer.lineHeight;
-        var lines = editor.session.getLength();
-        var newHeight = (lines + 0.5) * lineHeight;
-
-        // Добавляем небольшой отступ
-        newHeight += editor.renderer.scrollBar.getWidth();
-        // максимальная высота - 350px, минимальная  - 45px
-        if (newHeight > 40) {
-            editorDiv.style.height = (newHeight < 350 ? newHeight : 350) + "px";
-        } else {
-            editorDiv.style.height = "40px";
-        }
-        editor.resize();
+        const contentHeight = editor.getContentHeight();
+        editorDiv.style.height = `${contentHeight + 8}px`;
+        editor.layout();
     }
 
-    // Обновляем высоту изначально
+    function validatePython() {
+        const model = editor.getModel();
+        if (!model) return;
+
+        const code = model.getValue();
+        console.log("validate logic", code);
+    }
+
+    // Вызываем при первой загрузке и при каждом изменении текста
+    let validationTimeout = null;
+    editor.onDidChangeModelContent(() => {
+        updateEditorHeight();
+        clearTimeout(validationTimeout);
+        validationTimeout = setTimeout(validatePython, 2000);
+    });
+
+    validatePython();
     updateEditorHeight();
-
-    // Обновляем высоту при изменении содержимого
-    editor.session.on("change", updateEditorHeight);
-
     editors.push(editor);
 }
 
@@ -207,17 +206,21 @@ function getEditorContent(index) {
 
 // Создаём редакторы только после полной загрузки страницы
 window.onload = function () {
-    ace.require("ace/ext/language_tools"); // простое автодополнение кода
+    require.config({
+        paths: { vs: "https://unpkg.com/monaco-editor@latest/min/vs" },
+    });
 
-    var ideElements = document.querySelectorAll("div.ide");
+    require(["vs/editor/editor.main"], function () {
+        var ideElements = document.querySelectorAll("div.ide");
 
-    ideElements.forEach(function (element) {
-        var preElement = element.querySelector("pre");
+        ideElements.forEach(function (element) {
+            var preElement = element.querySelector("pre");
 
-        if (preElement) {
-            var content = preElement.textContent;
-            preElement.remove();
-            createAceEditor(element, content);
-        }
+            if (preElement) {
+                var content = preElement.textContent;
+                preElement.remove();
+                createMonacoEditor(element, content);
+            }
+        });
     });
 };
