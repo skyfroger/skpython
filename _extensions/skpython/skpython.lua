@@ -4,9 +4,9 @@ local function writeEnvironments()
       name = "skulpt",
       version = "1",
       scripts = {
-        { path = "skulpt.min.js",    afterBody = "true" },
-        { path = "skulpt-stdlib.js", afterBody = "true" },
-        { path = "python-skulpt.js", afterBody = "true" }
+        { path = "skulpt.min.js",    },
+        { path = "skulpt-stdlib.js"  },
+        { path = "python-skulpt.js"  }
       },
       stylesheets = { "skstyles.css" }
     })
@@ -15,6 +15,7 @@ local function writeEnvironments()
       name = "alpine",
       version = "3.12",
       scripts = {
+        { path = "sort-alpine.min.js", afterBody = "true" },
         { path = "alpine.min.js", afterBody = "true" }
       }
     })
