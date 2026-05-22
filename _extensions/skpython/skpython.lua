@@ -42,6 +42,7 @@ function createSkulptIDE(block)
   table.insert(elementContent, pandoc.RawBlock("html",
     [[<div class="skulpt-editor" x-data="skulptEditor(]] .. id .. [[)">
     <div class="sk__dropdown">
+    <div class="sk__toolbar"> <!-- начало блока с кнопками -->
       <button class="sk__dropdown-button run" type="button"
         :disabled="isRunning"
         @click="run()"
@@ -73,6 +74,9 @@ function createSkulptIDE(block)
         @click="saveToFile()">
         <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=" />
       </button>
+    </div> <!-- конец блока с кнопками -->
+
+      <img :src="statusImages[status]"/>
     </div>
 
     <div>

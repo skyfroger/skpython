@@ -114,15 +114,21 @@ button.general {
     color: black;
 }
 
-.sk__dropdown button img {
+.sk__dropdown img {
     height: 75%;
 }
 
-.sk__dropdown {
+.sk__dropdown,
+.sk__toolbar {
     display: flex;
-    margin-bottom: 0.3em;
     gap: 0.2em;
 }
+
+.sk__dropdown {
+    margin-bottom: 0.3em;
+    justify-content: space-between;
+}
+
 .sk__dropdown-button {
     font-size: 0.9rem;
     width: 35px;
