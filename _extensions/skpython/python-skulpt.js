@@ -158,11 +158,6 @@ function createAceEditor(element, content) {
     editor.session.setMode("ace/mode/python");
     editor.setValue(content);
 
-    var provider = LanguageProvider.fromCdn(
-        "https://www.unpkg.com/ace-linters@latest/build/",
-    );
-    provider.registerEditor(editor);
-
     // Отключаем перенос строк для точного подсчета
     editor.session.setUseWrapMode(false);
 
