@@ -1,13 +1,6 @@
 local function writeEnvironments()
   if quarto.doc.is_format("html:js") then
     quarto.doc.add_html_dependency({
-      name = "alpine",
-      version = "3.12",
-      scripts = {
-        { path = "alpine.min.js", afterBody = "true" }
-      }
-    })
-    quarto.doc.add_html_dependency({
       name = "skulpt",
       version = "1",
       scripts = {
@@ -16,6 +9,14 @@ local function writeEnvironments()
         { path = "python-skulpt.js", afterBody = "true" }
       },
       stylesheets = { "skstyles.css" }
+    })
+
+    quarto.doc.add_html_dependency({
+      name = "alpine",
+      version = "3.12",
+      scripts = {
+        { path = "alpine.min.js", afterBody = "true" }
+      }
     })
   end
 end
