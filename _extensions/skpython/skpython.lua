@@ -123,11 +123,10 @@ if quarto.doc.isFormat("html:js") then
   CodeBlock = function(block)
     -- # Вопрос с одним правильным ответом # --
     if block.classes:includes("sk-python") then -- если div содержит нужный стиль - обрабатываем разметку
-      writeEnvironments()
-      quarto.doc.include_text("after-body",
-      [[<script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>]])
       quarto.doc.include_text("in-header",
-        [[<script src="https://unpkg.com/web-tree-sitter@0.24.7/tree-sitter.js"></script>]])
+        [[<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>]])
+      writeEnvironments()
       return createSkulptIDE(block)
     end
     return nil
