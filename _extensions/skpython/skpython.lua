@@ -54,49 +54,26 @@ function createSkulptIDE(block)
         type="button"
         x-on:click="runit(editorId, `skulpt-output${editorId}`, `skulpt-canvas${editorId}`);"
       >
-        <span>▷</span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1wbGF5LWljb24gbHVjaWRlLXBsYXkiPjxwYXRoIGQ9Ik01IDVhMiAyIDAgMCAxIDMuMDA4LTEuNzI4bDExLjk5NyA2Ljk5OGEyIDIgMCAwIDEgLjAwMyAzLjQ1OGwtMTIgN0EyIDIgMCAwIDEgNSAxOXoiLz48L3N2Zz4=" />
+      </button>
+      
+      <button class="sk__dropdown-button stop" type="button" title="Остановить" x-on:click="stopit(`skulpt-output${editorId}`);">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zcXVhcmUtaWNvbiBsdWNpZGUtc3F1YXJlIj48cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjMiIHJ4PSIyIi8+PC9zdmc+" />
+      </button>
+      
+      <button class="sk__dropdown-button general" type="button" title="Восстановить" x-on:click="editors[editorId].setValue($refs.original.innerText);">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJvdGF0ZS1jY3ctaWNvbiBsdWNpZGUtcm90YXRlLWNjdyI+PHBhdGggZD0iTTMgMTJhOSA5IDAgMSAwIDktOSA5Ljc1IDkuNzUgMCAwIDAtNi43NCAyLjc0TDMgOCIvPjxwYXRoIGQ9Ik0zIDN2NWg1Ii8+PC9zdmc+"/>
+      </button>
+      
+      <button class="sk__dropdown-button general" type="button" title="Скопировать" x-on:click="navigator.clipboard.writeText(editors[editorId].getValue());">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbGVzLWljb24gbHVjaWRlLWZpbGVzIj48cGF0aCBkPSJNMTUgMmgtNGEyIDIgMCAwIDAtMiAydjExYTIgMiAwIDAgMCAyIDJoOGEyIDIgMCAwIDAgMi0yVjgiLz48cGF0aCBkPSJNMTYuNzA2IDIuNzA2QTIuNCAyLjQgMCAwIDAgMTUgMnY1YTEgMSAwIDAgMCAxIDFoNWEyLjQgMi40IDAgMCAwLS43MDYtMS43MDZ6Ii8+PHBhdGggZD0iTTUgN2EyIDIgMCAwIDAtMiAydjExYTIgMiAwIDAgMCAyIDJoOGEyIDIgMCAwIDAgMS43MzItMSIvPjwvc3ZnPg==" />
+      </button>
+      
+      <button class="sk__dropdown-button general" type="button" title="Сохранить файл" x-on:click="
+        saveToFile(editorId);">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=" />
       </button>
 
-      <div id="skulpt-hamburger-]] .. idesCounter .. [[" class="menu-trigger">
-        <div class="menu-icon">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-      </div>
-      <div id="skulpt-menu-]] .. idesCounter .. [[" style="display: none;">
-            <button class="sk__dropdown-button stop" type="button" title="Остановить" x-on:click="
-              stopit(`skulpt-output${editorId}`);
-              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
-            ">▢</button>
-            <button class="sk__dropdown-button general" type="button" title="Восстановить" x-on:click="
-              editors[editorId].setValue($refs.original.innerText);
-              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
-            ">↻</button>
-            <button class="sk__dropdown-button general" type="button" title="Скопировать" x-on:click="
-              navigator.clipboard.writeText(editors[editorId].getValue());
-              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
-            ">✎</button>
-            <button class="sk__dropdown-button general" type="button" title="Сохранить файл" x-on:click="
-              saveToFile(editorId);
-              document.getElementById('skulpt-hamburger-]] .. idesCounter .. [[')._tippy.hide();
-            ">🖪</button>
-      </div>
-      <script>
-        const template]] .. idesCounter .. [[ = document.getElementById("skulpt-menu-]] .. idesCounter .. [[");
-
-        tippy("#skulpt-hamburger-]] .. idesCounter .. [[", {
-          content: template]] .. idesCounter .. [[.innerHTML,
-          allowHTML: true,
-          interactive: true,
-          interactiveBorder: 30,
-          interactiveDebounce: 75,
-          trigger: 'click',
-          maxWidth: 'none',
-          theme: 'skmenu',
-          placement: 'right',
-        });
-      </script>
     </div> <!-- конец блока с кнопками -->
     <div> <!-- Начало основного блока -->
       <div class="ide">
@@ -124,8 +101,9 @@ if quarto.doc.isFormat("html:js") then
     -- # Вопрос с одним правильным ответом # --
     if block.classes:includes("sk-python") then -- если div содержит нужный стиль - обрабатываем разметку
       quarto.doc.include_text("in-header",
-        [[<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>]])
+        [[<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ace.js"></script>
+<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js"></script>
+<script src="https://www.unpkg.com/ace-linters@latest/build/ace-linters.js"></script>]])
       writeEnvironments()
       return createSkulptIDE(block)
     end

@@ -128,7 +128,7 @@ function runit(editorIndex, outputContainerId, canvasOutputId) {
                         throw new Error("Execution interrupted");
                     }
                 },
-            }
+            },
         )
         .catch((err) => {
             // показываем окно вывода, если обнаружена ошибка
@@ -157,6 +157,11 @@ function createAceEditor(element, content) {
     editor.setTheme("ace/theme/nord");
     editor.session.setMode("ace/mode/python");
     editor.setValue(content);
+
+    var provider = LanguageProvider.fromCdn(
+        "https://www.unpkg.com/ace-linters@latest/build/",
+    );
+    provider.registerEditor(editor);
 
     // Отключаем перенос строк для точного подсчета
     editor.session.setUseWrapMode(false);

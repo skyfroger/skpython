@@ -5,15 +5,21 @@
     --error-color-sk: #e34a6f;
     --running-color: #00a6ed;
     --border-radius: 0.2rem;
-    --shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    --shadow:
+        rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
         rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
 .skulpt-editor {
+    background-color: #fff;
+    padding: 0.7em;
+    box-shadow:
+        rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    border-radius: 0.5rem;
     margin: 1em 0;
-    display: grid;
-    column-gap: 0.25em;
-    grid-template-columns: 35px 1fr;
+    display: flex;
+    flex-direction: column;
 }
 
 .skulpt-editor .output__turtle {
@@ -40,7 +46,7 @@
 
 .skulpt-editor div.ide .ace_editor {
     margin-bottom: 0.3em;
-    border: 1px solid lightgray;
+    /* border: 1px solid lightgray; */
 }
 .skulpt-editor pre input {
     background-color: transparent;
@@ -69,7 +75,8 @@
 .skulpt-editor pre.output__container {
     display: none;
     border-radius: var(--border-radius);
-    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    font-family:
+        SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
         "Courier New", monospace;
     font-size: 0.95rem;
     white-space: pre-wrap;
@@ -101,17 +108,20 @@ button.stop {
 }
 
 button.general {
-    background-color: var(--running-color);
-    color: white !important;
+    background-color: none;
+    color: black;
+}
+
+.sk__dropdown button img {
+    height: 75%;
 }
 
 .sk__dropdown {
-    position: relative;
-    display: inline-block;
-    width: 40px;
+    display: flex;
+    margin-bottom: 0.3em;
+    gap: 0.2em;
 }
 .sk__dropdown-button {
-    /* position: absolute; */
     font-size: 0.9rem;
     width: 35px;
     height: 25px;
@@ -125,66 +135,7 @@ button.general {
     white-space: nowrap;
     border-radius: var(--border-radius);
     z-index: 100;
-}
-
-.menu-trigger {
-    width: 35px;
-    height: 10px;
-    margin-top: 5px;
-    cursor: pointer;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-around;
-    scale: 1;
-    transition: scale 0.3s ease-in-out;
-}
-
-.menu-trigger:hover {
-    scale: 1.15;
-}
-
-.menu-icon {
-    display: flex; /* Используем flexbox для управления расположением точек */
-    gap: 4px; /* Добавляем промежуток между точками */
-}
-
-.dot {
-    width: 6px; /* Размер точки */
-    height: 6px;
-    border-radius: 50%; /* Делаем элемент круглым */
-    background-color: #a6aebf; /* Цвет точки */
-    transition: background-color 0.3s ease-in-out;
-}
-
-.menu-trigger:hover .dot {
-    background-color: var(--terminal-bg);
-}
-
-/* Стиль меню */
-.tippy-box[data-theme~="skmenu"] {
-    border-radius: 0.4rem;
-    background-color: var(--quarto-body-bg);
-    background: linear-gradient(
-        0deg,
-        rgb(255, 255, 255) 0%,
-        rgb(241, 249, 243) 100%
-    );
-    color: var(--quarto-body-color);
-    font-size: 0.9rem;
-    box-shadow: var(--shadow);
-}
-.tippy-box[data-theme~="skmenu"][data-placement^="top"] > .tippy-arrow::before {
-    border-top-color: var(--quarto-body-bg);
-}
-.tippy-box[data-theme~="skmenu"][data-placement^="bottom"]
-    > .tippy-arrow::before {
-    border-bottom-color: var(--quarto-body-bg);
-}
-.tippy-box[data-theme~="skmenu"][data-placement^="left"]
-    > .tippy-arrow::before {
-    border-left-color: var(--quarto-body-bg);
-}
-.tippy-box[data-theme~="skmenu"][data-placement^="right"]
-    > .tippy-arrow::before {
-    border-right-color: var(--quarto-body-bg);
 }
