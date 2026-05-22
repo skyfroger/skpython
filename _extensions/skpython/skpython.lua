@@ -96,17 +96,29 @@ function createSkulptIDE(block)
   return pandoc.Div(elementContent)
 end
 
+
+local hasSkPython = false
+
 if quarto.doc.isFormat("html:js") then
+  
   CodeBlock = function(block)
     -- # Вопрос с одним правильным ответом # --
     if block.classes:includes("sk-python") then -- если div содержит нужный стиль - обрабатываем разметку
-      quarto.doc.include_text("in-header",
-        [[<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ace.js"></script>
-<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js"></script>
-<script src="https://www.unpkg.com/ace-linters@latest/build/ace-linters.js"></script>]])
+      hasSkPython = true
       writeEnvironments()
       return createSkulptIDE(block)
     end
     return nil
+  end
+
+  Pandoc = function(doc)
+    if hasSkPython then
+      quarto.doc.include_text("in-header", [[
+<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ace.js"></script>
+<script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js"></script>
+<script src="https://www.unpkg.com/ace-linters@latest/build/ace-linters.js"></script>
+]])
+    end
+    return doc
   end
 end

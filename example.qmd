@@ -8,3 +8,15 @@ filters:
 for letter in "Привет, мир":
     print(letter)
 ```
+
+
+```sk-python
+for letter in "Привет, мир":
+    print(letter)
+```
+
+
+```sk-python
+for letter in "Привет, мир":
+    print(letter)
+```
