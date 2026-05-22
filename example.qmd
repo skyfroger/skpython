@@ -5,8 +5,10 @@ filters:
 ---
 
 ```sk-python
-for letter in "Привет, мир":
-    print(letter)
+a = input('enter a: ')
+b = input('enter b: ')
+
+print(a + b)
 ```
 
 

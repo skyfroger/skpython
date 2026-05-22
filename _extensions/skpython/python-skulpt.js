@@ -1,41 +1,5 @@
-// массив редакторов на странице
-const editors = [];
-
-// Глобальная переменная для отслеживания текущего выполняющегося редактора
-let currentRunningEditor = null;
-
-// Функция для остановки выполнения всех редакторов, кроме текущего
-function stopAllOtherEditors(currentEditorIndex) {
-    editors.forEach((editor, index) => {
-        if (index !== currentEditorIndex) {
-            stopit(`skulpt-output${index}`);
-            //clearOutput(`skulpt-output${index}`);
-        }
-    });
-}
-
-// Функция для создания пользовательского обработчика вывода
-function output(containerId) {
-    // по-умолчанию скрываем окно вывода
-    document.getElementById(containerId).style.display = "none";
-    return (text) => {
-        // если код вызывает print(), показываем окно вывода
-        document.getElementById(containerId).style.display = "block";
-        var outputDiv = document.getElementById(containerId);
-        var textNode = document.createTextNode(text);
-        outputDiv.appendChild(textNode);
-        // Прокручиваем вывод вниз
-        outputDiv.scrollTop = outputDiv.scrollHeight;
-    };
-}
-
-// Функция для очистки вывода
-function clearOutput(containerId) {
-    const outputDiv = document.getElementById(containerId);
-    if (outputDiv) {
-        outputDiv.innerHTML = "";
-    }
-}
+// Глобальный ID активного редактора (Skulpt не поддерживает параллельность)
+window.skulptRunningId = null;
 
 function builtinRead(x) {
     if (
@@ -46,178 +10,262 @@ function builtinRead(x) {
     return Sk.builtinFiles["files"][x];
 }
 
-function input(containerId) {
-    return (prompt) => {
-        return new Promise((resolve) => {
-            var outputDiv = document.getElementById(containerId);
+function registerSkulptAlpine() {
+    Alpine.data("skulptEditor", (editorId) => ({
+        editorId: editorId,
+        editor: null,
+        originalCode: "",
+        isRunning: false,
+        isWaitingForInput: false,
+        hasError: false,
+        status: "ready", // ready | running | waiting-input | error | finished | stopped
+        shouldStop: false,
+        inputResolve: null,
+        activeInputElement: null,
 
-            // Отображаем запрос на ввод
-            const outf = output(containerId);
-            outf(prompt);
+        // ─── Инициализация ───
+        init() {
+            this.originalCode = this.$refs.original.textContent;
+            this.$nextTick(() => this.initAce());
+        },
 
-            var inputElement = document.createElement("input");
-            inputElement.type = "text";
-            inputElement.style.cssText = `width: calc(100% - ${prompt.length}ch);`;
+        initAce() {
+            const container = this.$refs.editorContainer;
+            this.editor = ace.edit(container);
+            this.editor.setTheme("ace/theme/github_light_default");
+            this.editor.session.setMode("ace/mode/python");
+            this.editor.setValue(this.originalCode, -1);
 
-            inputElement.onkeydown = function (e) {
-                if (e.key === "Enter") {
-                    e.preventDefault(); // Предотвращаем стандартное поведение Enter
-                    var inputValue = inputElement.value;
-                    // Отображаем введенное значение
-                    outf(inputValue + "\n");
-                    outputDiv.removeChild(inputElement);
-                    // Прокручиваем вывод вниз
-                    outputDiv.scrollTop = outputDiv.scrollHeight;
-                    resolve(inputValue);
+            ace.require("ace/ext/language_tools");
+
+            if (window.LanguageProvider) {
+                try {
+                    const provider = LanguageProvider.fromCdn(
+                        "https://www.unpkg.com/ace-linters@latest/build/",
+                    );
+                    provider.registerEditor(this.editor);
+                } catch (e) {
+                    /* ignore */
                 }
+            }
+
+            this.editor.session.setUseWrapMode(false);
+            this.editor.setOptions({
+                fontSize: "0.95rem",
+                highlightActiveLine: false,
+                highlightGutterLine: false,
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false,
+            });
+
+            const updateHeight = () => {
+                const lineHeight = this.editor.renderer.lineHeight || 16;
+                let h = (this.editor.session.getLength() + 0.5) * lineHeight;
+                if (this.editor.renderer.scrollBar)
+                    h += this.editor.renderer.scrollBar.getWidth();
+                container.style.height =
+                    (h > 40 ? Math.min(h, 350) : 40) + "px";
+                this.editor.resize();
             };
 
-            outputDiv.appendChild(inputElement);
-            inputElement.focus();
-        });
-    };
-}
+            this.editor.session.on("change", updateHeight);
+            updateHeight();
+        },
 
-// Обновленная функция stopit
-function stopit(containerId) {
-    // console.log(`Stopping execution for ${containerId}`);
-    Sk.execLimit = 1;
-}
+        getCode() {
+            return this.editor ? this.editor.getValue() : "";
+        },
 
-// Обновленная функция runit
-function runit(editorIndex, outputContainerId, canvasOutputId) {
-    // Останавливаем все другие редакторы
-    stopAllOtherEditors(editorIndex);
-    // очищаем окно вывода
-    clearOutput(outputContainerId);
+        // ─── Вывод ───
+        addOutput(text) {
+            const out = this.$refs.output;
+            out.style.display = "block";
+            out.appendChild(document.createTextNode(text));
+            out.scrollTop = out.scrollHeight;
+        },
 
-    // Sk.builtinFiles["files"]["src/lib/adder.py"] = `def add(x, y):
-    //   return x + y`;
-    // console.log(Sk.builtinFiles);
-    // изначально скрываем окно вывода
-    document.getElementById(outputContainerId).style.display = "none";
+        clearOutput() {
+            this.$refs.output.innerHTML = "";
+            this.$refs.output.style.display = "none";
+        },
 
-    currentRunningEditor = editorIndex;
-    const prog = getEditorContent(editorIndex);
-    Sk.pre = outputContainerId;
-    Sk.configure({
-        __future__: Sk.python3,
-        output: output(outputContainerId),
-        read: builtinRead,
-        inputfun: input(outputContainerId),
-        inputfunTakesPrompt: true,
-        yieldLimit: 200,
-        execLimit: 180000,
-        killableWhile: true,
-        killableFor: true,
-    });
-    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = canvasOutputId;
-    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).width = 400;
-    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).height = 300;
-    Sk.timeoutMsg = function () {
-        return "Программа остановлена";
-    };
-    Sk.misceval
-        .asyncToPromise(
-            () => {
-                return Sk.importMainWithBody("<stdin>", false, prog, true);
-            },
-            {
-                "*": () => {
-                    if (currentRunningEditor !== editorIndex) {
-                        throw new Error("Execution interrupted");
-                    }
-                },
-            },
-        )
-        .catch((err) => {
-            // показываем окно вывода, если обнаружена ошибка
-            document.getElementById(outputContainerId).style.display = "block";
-            const outputDiv = document.getElementById(outputContainerId);
-            const textNode = document.createTextNode(err.toString() + "\n");
-            outputDiv.appendChild(textNode);
-            outputDiv.scrollTop = outputDiv.scrollHeight;
-            console.log(err.toString());
-        })
-        .finally(() => {
-            console.log("Код выполнился без ошибок");
-            if (currentRunningEditor === editorIndex) {
-                currentRunningEditor = null;
+        // ─── Запуск ───
+        run() {
+            if (this.isRunning) return;
+
+            // Прерываем другой редактор, если он крутится
+            if (
+                window.skulptRunningId !== null &&
+                window.skulptRunningId !== this.editorId
+            ) {
+                Sk.execLimit = 1;
             }
-        });
+
+            window.skulptRunningId = this.editorId;
+            this.shouldStop = false;
+            this.isRunning = true;
+            this.isWaitingForInput = false;
+            this.hasError = false;
+            this.status = "running";
+            this.activeInputElement = null;
+
+            this.clearOutput();
+
+            const prog = this.getCode();
+            const myId = this.editorId;
+
+            Sk.configure({
+                __future__: Sk.python3,
+                output: (text) => this.addOutput(text),
+                read: builtinRead,
+                inputfun: (prompt) => this.handleInput(prompt),
+                inputfunTakesPrompt: true,
+                yieldLimit: 200,
+                execLimit: 180000,
+                killableWhile: true,
+                killableFor: true,
+            });
+
+            Sk.pre = this.$refs.output.id;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target =
+                this.$refs.canvas.id;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).width = 400;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).height = 300;
+
+            Sk.timeoutMsg = () => "Программа остановлена";
+
+            Sk.misceval
+                .asyncToPromise(
+                    () => Sk.importMainWithBody("<stdin>", false, prog, true),
+                    {
+                        "*": () => {
+                            if (
+                                window.skulptRunningId !== myId ||
+                                this.shouldStop
+                            ) {
+                                throw new Error("Execution interrupted");
+                            }
+                        },
+                    },
+                )
+                .then(() => {
+                    if (window.skulptRunningId === myId && !this.shouldStop) {
+                        this.status = "finished";
+                    }
+                })
+                .catch((err) => {
+                    if (window.skulptRunningId === myId && !this.shouldStop) {
+                        this.hasError = true;
+                        this.status = "error";
+                        this.addOutput(err.toString() + "\n");
+                    }
+                })
+                .finally(() => {
+                    if (window.skulptRunningId === myId) {
+                        window.skulptRunningId = null;
+                    }
+                    this.isRunning = false;
+                    this.isWaitingForInput = false;
+                    this.shouldStop = false;
+                    this.inputResolve = null;
+                    this.activeInputElement = null;
+                });
+        },
+
+        // ─── Остановка ───
+        stop() {
+            this.shouldStop = true;
+            Sk.execLimit = 1;
+
+            // Если сейчас ждём ввода — убираем input из DOM и разблокируем Promise
+            if (this.activeInputElement && this.activeInputElement.parentNode) {
+                this.activeInputElement.parentNode.removeChild(
+                    this.activeInputElement,
+                );
+                this.activeInputElement = null;
+            }
+            if (this.inputResolve) {
+                this.inputResolve(""); // пустая строка, чтобы Skulpt продолжил
+                this.inputResolve = null;
+            }
+
+            this.isRunning = false;
+            this.isWaitingForInput = false;
+            this.status = "stopped";
+
+            if (window.skulptRunningId === this.editorId) {
+                window.skulptRunningId = null;
+            }
+        },
+
+        // ─── Ввод (input) внутри окна вывода ───
+        handleInput(prompt) {
+            return new Promise((resolve) => {
+                this.inputResolve = resolve;
+                this.isWaitingForInput = true;
+                this.status = "waiting-input";
+
+                // Выводим prompt в консоль
+                this.addOutput(prompt);
+
+                const out = this.$refs.output;
+                const inputEl = document.createElement("input");
+                inputEl.type = "text";
+                inputEl.style.cssText = `width: calc(100% - ${prompt.length}ch);`;
+
+                inputEl.onkeydown = (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const value = inputEl.value;
+
+                        // Отображаем введённое значение в выводе
+                        this.addOutput(value + "\n");
+                        out.removeChild(inputEl);
+                        this.activeInputElement = null;
+
+                        out.scrollTop = out.scrollHeight;
+
+                        this.isWaitingForInput = false;
+                        this.inputResolve = null;
+                        if (!this.shouldStop) this.status = "running";
+
+                        resolve(value);
+                    }
+                };
+
+                out.appendChild(inputEl);
+                this.activeInputElement = inputEl;
+                inputEl.focus();
+            });
+        },
+
+        // ─── Утилиты ───
+        resetCode() {
+            if (this.editor) this.editor.setValue(this.originalCode, -1);
+        },
+
+        copyCode() {
+            navigator.clipboard.writeText(this.getCode());
+        },
+
+        saveToFile() {
+            const blob = new Blob([this.getCode().replace(/\n/g, "\r\n")], {
+                type: "plain/text",
+            });
+            const a = document.createElement("a");
+            a.href = window.URL.createObjectURL(blob);
+            a.download = "script.py";
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+    }));
 }
 
-function createAceEditor(element, content) {
-    // Создаем новый div для редактора
-    var editorDiv = document.createElement("div");
-    element.appendChild(editorDiv);
-
-    // Создаем редактор Ace
-    var editor = ace.edit(editorDiv);
-    editor.setTheme("ace/theme/github_light_default");
-    editor.session.setMode("ace/mode/python");
-    editor.setValue(content);
-
-    // Отключаем перенос строк для точного подсчета
-    editor.session.setUseWrapMode(false);
-
-    editor.setOptions({
-        fontSize: "0.95rem",
-        highlightActiveLine: false,
-        highlightGutterLine: false,
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: false,
-    });
-
-    editor.setValue(content, -1); // -1 перемещает курсор в начало
-
-    // Функция для обновления высоты редактора
-    function updateEditorHeight() {
-        var lineHeight = editor.renderer.lineHeight;
-        var lines = editor.session.getLength();
-        var newHeight = (lines + 0.5) * lineHeight;
-
-        // Добавляем небольшой отступ
-        newHeight += editor.renderer.scrollBar.getWidth();
-        // максимальная высота - 350px, минимальная  - 45px
-        if (newHeight > 40) {
-            editorDiv.style.height = (newHeight < 350 ? newHeight : 350) + "px";
-        } else {
-            editorDiv.style.height = "40px";
-        }
-        editor.resize();
-    }
-
-    // Обновляем высоту изначально
-    updateEditorHeight();
-
-    // Обновляем высоту при изменении содержимого
-    editor.session.on("change", updateEditorHeight);
-
-    editors.push(editor);
+if (window.Alpine) {
+    registerSkulptAlpine();
+} else {
+    document.addEventListener("alpine:init", registerSkulptAlpine);
 }
-
-function getEditorContent(index) {
-    // возвращаем исходный код из редактора с заданным индексом
-    return index >= 0 && index < editors.length
-        ? editors[index].getValue()
-        : "";
-}
-
-// Создаём редакторы только после полной загрузки страницы
-window.onload = function () {
-    ace.require("ace/ext/language_tools"); // простое автодополнение кода
-
-    var ideElements = document.querySelectorAll("div.ide");
-
-    ideElements.forEach(function (element) {
-        var preElement = element.querySelector("pre");
-
-        if (preElement) {
-            var content = preElement.textContent;
-            preElement.remove();
-            createAceEditor(element, content);
-        }
-    });
-};
