@@ -154,7 +154,7 @@ function createAceEditor(element, content) {
 
     // Создаем редактор Ace
     var editor = ace.edit(editorDiv);
-    editor.setTheme("ace/theme/nord");
+    editor.setTheme("ace/theme/github_light_default");
     editor.session.setMode("ace/mode/python");
     editor.setValue(content);
 
