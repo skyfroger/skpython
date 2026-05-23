@@ -77,7 +77,7 @@ function createSkulptIDE(block)
       </button>
     </div> <!-- конец блока с кнопками -->
 
-      <img :src="statusImages[status]"/>
+      <img :title="statusImages[status].title" :src="statusImages[status].icon"/>
     </div>
 
     <div>
