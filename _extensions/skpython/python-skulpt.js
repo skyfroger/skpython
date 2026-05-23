@@ -1,4 +1,4 @@
-// Глобальный ID активного редактора (Skulpt не поддерживает параллельность)
+// Глобальный ID активного редактора
 window.skulptRunningId = null;
 
 function builtinRead(x) {
@@ -13,8 +13,8 @@ function builtinRead(x) {
 function registerSkulptAlpine() {
     Alpine.data("skulptEditor", (editorId) => ({
         editorId: editorId,
-        editor: null,
-        originalCode: "",
+        editor: null, // ссылка на Ace-редактор
+        originalCode: "", // хранение кода по умолчанию
         isRunning: false,
         isWaitingForInput: false,
         hasError: false,
@@ -32,24 +32,42 @@ function registerSkulptAlpine() {
                 icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGE2ZWQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1rZXlib2FyZC1pY29uIGx1Y2lkZS1rZXlib2FyZCI+PHBhdGggZD0iTTEwIDhoLjAxIi8+PHBhdGggZD0iTTEyIDEyaC4wMSIvPjxwYXRoIGQ9Ik0xNCA4aC4wMSIvPjxwYXRoIGQ9Ik0xNiAxMmguMDEiLz48cGF0aCBkPSJNMTggOGguMDEiLz48cGF0aCBkPSJNNiA4aC4wMSIvPjxwYXRoIGQ9Ik03IDE2aDEwIi8+PHBhdGggZD0iTTggMTJoLjAxIi8+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjE2IiB4PSIyIiB5PSI0IiByeD0iMiIvPjwvc3ZnPg==",
                 title: "Ожидается ввод значений",
             },
-            error: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlMzRhNmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1iYWRnZS1hbGVydC1pY29uIGx1Y2lkZS1iYWRnZS1hbGVydCI+PHBhdGggZD0iTTMuODUgOC42MmE0IDQgMCAwIDEgNC43OC00Ljc3IDQgNCAwIDAgMSA2Ljc0IDAgNCA0IDAgMCAxIDQuNzggNC43OCA0IDQgMCAwIDEgMCA2Ljc0IDQgNCAwIDAgMS00Ljc3IDQuNzggNCA0IDAgMCAxLTYuNzUgMCA0IDQgMCAwIDEtNC43OC00Ljc3IDQgNCAwIDAgMSAwLTYuNzZaIi8+PGxpbmUgeDE9IjEyIiB4Mj0iMTIiIHkxPSI4IiB5Mj0iMTIiLz48bGluZSB4MT0iMTIiIHgyPSIxMi4wMSIgeTE9IjE2IiB5Mj0iMTYiLz48L3N2Zz4=",
+            error: {
+                icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlMzRhNmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1iYWRnZS1hbGVydC1pY29uIGx1Y2lkZS1iYWRnZS1hbGVydCI+PHBhdGggZD0iTTMuODUgOC42MmE0IDQgMCAwIDEgNC43OC00Ljc3IDQgNCAwIDAgMSA2Ljc0IDAgNCA0IDAgMCAxIDQuNzggNC43OCA0IDQgMCAwIDEgMCA2Ljc0IDQgNCAwIDAgMS00Ljc3IDQuNzggNCA0IDAgMCAxLTYuNzUgMCA0IDQgMCAwIDEtNC43OC00Ljc3IDQgNCAwIDAgMSAwLTYuNzZaIi8+PGxpbmUgeDE9IjEyIiB4Mj0iMTIiIHkxPSI4IiB5Mj0iMTIiLz48bGluZSB4MT0iMTIiIHgyPSIxMi4wMSIgeTE9IjE2IiB5Mj0iMTYiLz48L3N2Zz4=",
+                title: "Ошибка при выполнении скрипта",
+            },
             finished: {
                 icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2MGE1NjEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1iYWRnZS1jaGVjay1pY29uIGx1Y2lkZS1iYWRnZS1jaGVjayI+PHBhdGggZD0iTTMuODUgOC42MmE0IDQgMCAwIDEgNC43OC00Ljc3IDQgNCAwIDAgMSA2Ljc0IDAgNCA0IDAgMCAxIDQuNzggNC43OCA0IDQgMCAwIDEgMCA2Ljc0IDQgNCAwIDAgMS00Ljc3IDQuNzggNCA0IDAgMCAxLTYuNzUgMCA0IDQgMCAwIDEtNC43OC00Ljc3IDQgNCAwIDAgMSAwLTYuNzZaIi8+PHBhdGggZD0ibTkgMTIgMiAyIDQtNCIvPjwvc3ZnPg==",
                 title: "Скрипт выполнился без ошибок",
             },
             stopped: {
                 icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1MTU3NmQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1oYW5kLWljb24gbHVjaWRlLWhhbmQiPjxwYXRoIGQ9Ik0xOCAxMVY2YTIgMiAwIDAgMC0yLTJhMiAyIDAgMCAwLTIgMiIvPjxwYXRoIGQ9Ik0xNCAxMFY0YTIgMiAwIDAgMC0yLTJhMiAyIDAgMCAwLTIgMnYyIi8+PHBhdGggZD0iTTEwIDEwLjVWNmEyIDIgMCAwIDAtMi0yYTIgMiAwIDAgMC0yIDJ2OCIvPjxwYXRoIGQ9Ik0xOCA4YTIgMiAwIDEgMSA0IDB2NmE4IDggMCAwIDEtOCA4aC0yYy0yLjggMC00LjUtLjg2LTUuOTktMi4zNGwtMy42LTMuNmEyIDIgMCAwIDEgMi44My0yLjgyTDcgMTUiLz48L3N2Zz4=",
-                title: "Возникла ошибка",
+                title: "Скрипт остановлен",
             },
         },
         shouldStop: false,
         inputResolve: null,
         activeInputElement: null,
+        functionNames: [],
 
         // Инициализация
         init() {
+            Sk.configure({
+                __future__: Sk.python3,
+                output: (text) => this.addOutput(text),
+                read: builtinRead,
+                inputfun: (prompt) => this.handleInput(prompt),
+                inputfunTakesPrompt: true,
+                yieldLimit: 200,
+                execLimit: 180000,
+                killableWhile: true,
+                killableFor: true,
+            });
             this.originalCode = this.$refs.original.textContent;
-            this.$nextTick(() => this.initAce());
+            this.$nextTick(() => {
+                this.initAce();
+                this.getAST(this.getCode());
+            });
         },
 
         initAce() {
@@ -75,6 +93,7 @@ function registerSkulptAlpine() {
             this.editor.session.setUseWrapMode(false);
             this.editor.setOptions({
                 fontSize: "0.95rem",
+                showPrintMargin: false,
                 highlightActiveLine: false,
                 highlightGutterLine: false,
                 enableBasicAutocompletion: true,
@@ -92,7 +111,14 @@ function registerSkulptAlpine() {
                 this.editor.resize();
             };
 
-            this.editor.session.on("change", updateHeight);
+            let validationTimeout = null;
+            this.editor.session.on("change", () => {
+                updateHeight();
+                clearTimeout(validationTimeout);
+                validationTimeout = setTimeout(() => {
+                    this.getAST(this.getCode());
+                }, 500);
+            });
             updateHeight();
         },
 
@@ -100,7 +126,7 @@ function registerSkulptAlpine() {
             return this.editor ? this.editor.getValue() : "";
         },
 
-        // ─── Вывод ───
+        // Вывод
         addOutput(text) {
             const out = this.$refs.output;
             out.style.display = "block";
@@ -111,21 +137,74 @@ function registerSkulptAlpine() {
         clearOutput() {
             this.$refs.output.innerHTML = "";
             this.$refs.output.style.display = "none";
+            this.status = "ready";
         },
 
-        getAST() {
-            const code = this.getCode();
+        getAST(code) {
+            const names = [];
+            try {
+                var parse = Sk.parse("<stdin>", code);
+                var ast = Sk.astFromParse(parse.cst, "<stdin>", parse.flags);
 
-            const parse = Sk.parse("<stdout>", code);
-            const ast = Sk.astFromParse(parse.cst, "<stdout>", parse.flags);
-            console.log(parse);
-            console.log(ast);
+                function walk(node) {
+                    if (!node || typeof node !== "object") return;
+
+                    // Вызов функции: Call(func=Name(id='foo'), ...)
+                    if (
+                        node._astname === "Call" &&
+                        node.func &&
+                        node.func._astname === "Name" &&
+                        node.func.id
+                    ) {
+                        const funcName = node.func.id.v;
+                        if (!names.includes(funcName)) names.push(funcName);
+                    }
+
+                    for (var key in node) {
+                        if (
+                            key.startsWith("_") ||
+                            key === "lineno" ||
+                            key === "col_offset"
+                        )
+                            continue;
+                        var child = node[key];
+                        if (Array.isArray(child)) {
+                            child.forEach(walk);
+                        } else {
+                            walk(child);
+                        }
+                    }
+                }
+                walk(ast);
+            } catch (e) {
+                console.warn("Parse error:", e);
+            }
+
+            this.functionNames = names;
         },
 
         // Запуск
         run() {
             if (this.isRunning) return;
+            Sk.configure({
+                __future__: Sk.python3,
+                output: (text) => this.addOutput(text),
+                read: builtinRead,
+                inputfun: (prompt) => this.handleInput(prompt),
+                inputfunTakesPrompt: true,
+                yieldLimit: 200,
+                execLimit: 180000,
+                killableWhile: true,
+                killableFor: true,
+            });
 
+            Sk.pre = this.$refs.output.id;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target =
+                this.$refs.canvas.id;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).width = 400;
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).height = 300;
+
+            Sk.timeoutMsg = () => "Программа остановлена";
             // Прерываем другой редактор, если он запущен
             if (
                 window.skulptRunningId !== null &&
@@ -146,26 +225,6 @@ function registerSkulptAlpine() {
 
             const prog = this.getCode();
             const myId = this.editorId;
-
-            Sk.configure({
-                __future__: Sk.python3,
-                output: (text) => this.addOutput(text),
-                read: builtinRead,
-                inputfun: (prompt) => this.handleInput(prompt),
-                inputfunTakesPrompt: true,
-                yieldLimit: 200,
-                execLimit: 180000,
-                killableWhile: true,
-                killableFor: true,
-            });
-
-            Sk.pre = this.$refs.output.id;
-            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target =
-                this.$refs.canvas.id;
-            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).width = 400;
-            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).height = 300;
-
-            Sk.timeoutMsg = () => "Программа остановлена";
 
             Sk.misceval
                 .asyncToPromise(
@@ -203,8 +262,6 @@ function registerSkulptAlpine() {
                     this.inputResolve = null;
                     this.activeInputElement = null;
                 });
-
-            this.getAST();
         },
 
         // Остановка

@@ -98,6 +98,7 @@
 }
 
 button.run {
+    padding: 0 0.5em;
     background-color: var(--success-color-sk);
     border-color: var(--success-color-sk);
     color: white;
@@ -119,22 +120,19 @@ button.general {
 }
 
 .sk__dropdown,
-.sk__toolbar {
+.sk__toolbar,
+.sk__editor__func {
     display: flex;
-    gap: 0.2em;
+    gap: 0.1em;
+    justify-content: space-between;
 }
 
 .sk__dropdown {
     margin-bottom: 0.3em;
-    justify-content: space-between;
 }
 
 .sk__dropdown-button {
-    font-size: 0.9rem;
-    width: 35px;
-    height: 25px;
-    background-color: white;
-    border: 1px solid var(--running-color);
+    padding: 0 0.07em;
     color: white;
     border: none;
     cursor: pointer;
@@ -146,4 +144,17 @@ button.general {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.sk__editor__func {
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 0.2em;
+    padding-top: 0.2em;
+    border-top: 1px dashed var(--terminal-bg);
+}
+
+.sk__editor__func img,
+.sk__editor__func code {
+    display: inline-block;
 }
