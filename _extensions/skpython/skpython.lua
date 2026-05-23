@@ -29,7 +29,6 @@ local function addAceLibsOnce()
   quarto.doc.include_text("in-header", [[
 <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ace.js"></script>
 <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js"></script>
-<script src="https://www.unpkg.com/ace-linters@latest/build/ace-linters.js"></script>
 <style>[x-cloak] { display: none !important; }</style>
 ]])
 end

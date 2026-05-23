@@ -79,17 +79,6 @@ function registerSkulptAlpine() {
 
             ace.require("ace/ext/language_tools");
 
-            if (window.LanguageProvider) {
-                try {
-                    const provider = LanguageProvider.fromCdn(
-                        "https://www.unpkg.com/ace-linters@latest/build/",
-                    );
-                    provider.registerEditor(this.editor);
-                } catch (e) {
-                    /* ignore */
-                }
-            }
-
             this.editor.session.setUseWrapMode(false);
             this.editor.setOptions({
                 fontSize: "0.95rem",
@@ -176,9 +165,7 @@ function registerSkulptAlpine() {
                     }
                 }
                 walk(ast);
-            } catch (e) {
-                console.warn("Parse error:", e);
-            }
+            } catch (e) {}
 
             this.functionNames = names;
         },
