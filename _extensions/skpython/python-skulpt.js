@@ -10,7 +10,7 @@ function builtinRead(x) {
     return Sk.builtinFiles["files"][x];
 }
 
-function registerSkulptAlpine() {
+function registerAlpineComponents() {
     Alpine.data("skulptEditor", (editorId) => ({
         editorId: editorId,
         editor: null, // ссылка на Ace-редактор
@@ -340,10 +340,95 @@ function registerSkulptAlpine() {
             document.body.removeChild(a);
         },
     }));
+
+    Alpine.data("apiSearch", () => ({
+        visFilter: ["blackBox"],
+        query: "",
+        results: [],
+        fuse: new Fuse(window.__DOCS__, {
+            useExtendedSearch: true,
+            keys: ["name"],
+            threshold: 0.3,
+            includeScore: true,
+        }),
+        showModal: false,
+        selectedItem: null,
+        init() {
+            this.$watch("visFilter", (value) => {
+                Prism.highlightAll();
+            });
+        },
+        searchDef() {
+            if (this.query.length < 3) {
+                this.results = [];
+            } else {
+                this.results = this.fuse.search(this.query, { limit: 5 });
+            }
+            this.$nextTick(() => {
+                Prism.highlightAll();
+            });
+        },
+        openModal(item) {
+            this.selectedItem = item;
+            this.showModal = true;
+            this.$nextTick(() => {
+                Prism.highlightAll();
+            });
+        },
+        closeModal() {
+            this.showModal = false;
+            this.selectedItem = null;
+        },
+        paramFormat(paramObj) {
+            if (!this.visFilter.includes("optParams") && !paramObj.required)
+                return ""; // скрываем необязательные параметры при необходимости
+
+            const typeHint = this.visFilter.includes("typeHints")
+                ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
+                : "";
+            const defaultValue = paramObj.default_value
+                ? ` = ${paramObj.default_value}`
+                : "";
+            const formatedParam = paramObj.name + typeHint + defaultValue;
+            return formatedParam;
+        },
+        signature() {
+            let = formatedSignature = this.selectedItem.name + "(";
+
+            const formatedParams = this.selectedItem.parameters.map((param) =>
+                this.paramFormat(param),
+            );
+            const notEmptyformatedParams = formatedParams.filter(
+                (param) => param !== "",
+            );
+            formatedSignature += notEmptyformatedParams.join(", ");
+
+            formatedSignature += ")";
+
+            formatedSignature += this.visFilter.includes("typeHints")
+                ? ` -> ${this.selectedItem.returns.type}`
+                : "";
+
+            return formatedSignature;
+        },
+        parametersFilter() {
+            const allParams = this.selectedItem?.parameters ?? [];
+            const predicat = (p) => {
+                return (
+                    this.visFilter.includes("optParams") ||
+                    (!this.visFilter.includes("optParams") && p.required)
+                );
+            };
+            return allParams.filter((p) => predicat(p));
+        },
+        returnFormat() {
+            return this.selectedItem.returns.type;
+        },
+    }));
 }
 
 if (window.Alpine) {
-    registerSkulptAlpine();
+    registerAlpineComponents();
 } else {
-    document.addEventListener("alpine:init", registerSkulptAlpine);
+    document.addEventListener("alpine:init", registerAlpineComponents);
 }
