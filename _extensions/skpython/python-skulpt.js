@@ -11,6 +11,19 @@ function builtinRead(x) {
 }
 
 function registerAlpineComponents() {
+    const savedFilter = JSON.parse(
+        localStorage.getItem("vis-filter") || '["blackBox"]',
+    );
+
+    Alpine.store("vis", {
+        visFilter: savedFilter,
+    });
+
+    Alpine.effect(() => {
+        const filter = Alpine.store("vis").visFilter;
+        localStorage.setItem("vis-filter", JSON.stringify(filter));
+    });
+
     Alpine.data("skulptEditor", (editorId) => ({
         editorId: editorId,
         editor: null, // ссылка на Ace-редактор
@@ -49,6 +62,58 @@ function registerAlpineComponents() {
         inputResolve: null,
         activeInputElement: null,
         functionNames: [],
+        showModal: false,
+        selectedItem: null,
+
+        paramFormat(paramObj) {
+            if (
+                !this.$store.vis.visFilter.includes("optParams") &&
+                !paramObj.required
+            )
+                return ""; // скрываем необязательные параметры при необходимости
+
+            const typeHint = this.$store.vis.visFilter.includes("typeHints")
+                ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
+                : "";
+            const defaultValue = paramObj.default_value
+                ? ` = ${paramObj.default_value}`
+                : "";
+            const formatedParam = paramObj.name + typeHint + defaultValue;
+            return formatedParam;
+        },
+        signature() {
+            let = formatedSignature = this.selectedItem.name + "(";
+
+            const formatedParams = this.selectedItem.parameters.map((param) =>
+                this.paramFormat(param),
+            );
+            const notEmptyformatedParams = formatedParams.filter(
+                (param) => param !== "",
+            );
+            formatedSignature += notEmptyformatedParams.join(", ");
+
+            formatedSignature += ")";
+
+            formatedSignature += this.$store.vis.visFilter.includes("typeHints")
+                ? ` -> ${this.selectedItem.returns.type}`
+                : "";
+
+            return formatedSignature;
+        },
+        parametersFilter() {
+            const allParams = this.selectedItem?.parameters ?? [];
+            const predicat = (p) => {
+                return (
+                    this.$store.vis.visFilter.includes("optParams") ||
+                    (!this.$store.vis.visFilter.includes("optParams") &&
+                        p.required)
+                );
+            };
+            return allParams.filter((p) => predicat(p));
+        },
+        returnFormat() {
+            return this.selectedItem.returns.type;
+        },
 
         // Инициализация
         init() {
@@ -68,6 +133,19 @@ function registerAlpineComponents() {
                 this.initAce();
                 this.getAST(this.getCode());
             });
+        },
+
+        openModal(item) {
+            const index = window.__NAMES__.indexOf(item);
+            this.selectedItem = window.__DOCS__[index];
+            this.showModal = true;
+            this.$nextTick(() => {
+                Prism.highlightAll();
+            });
+        },
+        closeModal() {
+            this.showModal = false;
+            this.selectedItem = null;
         },
 
         initAce() {
@@ -146,7 +224,11 @@ function registerAlpineComponents() {
                         node.func.id
                     ) {
                         const funcName = node.func.id.v;
-                        if (!names.includes(funcName)) names.push(funcName);
+                        if (
+                            !names.includes(funcName) &&
+                            window.__NAMES__.includes(funcName)
+                        )
+                            names.push(funcName);
                     }
 
                     for (var key in node) {
@@ -342,7 +424,6 @@ function registerAlpineComponents() {
     }));
 
     Alpine.data("apiSearch", () => ({
-        visFilter: ["blackBox"],
         query: "",
         results: [],
         fuse: new Fuse(window.__DOCS__, {
@@ -354,7 +435,7 @@ function registerAlpineComponents() {
         showModal: false,
         selectedItem: null,
         init() {
-            this.$watch("visFilter", (value) => {
+            this.$watch("$store.vis.visFilter", (value) => {
                 Prism.highlightAll();
             });
         },
@@ -380,10 +461,13 @@ function registerAlpineComponents() {
             this.selectedItem = null;
         },
         paramFormat(paramObj) {
-            if (!this.visFilter.includes("optParams") && !paramObj.required)
+            if (
+                !this.$store.vis.visFilter.includes("optParams") &&
+                !paramObj.required
+            )
                 return ""; // скрываем необязательные параметры при необходимости
 
-            const typeHint = this.visFilter.includes("typeHints")
+            const typeHint = this.$store.vis.visFilter.includes("typeHints")
                 ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
                 : "";
             const defaultValue = paramObj.default_value
@@ -405,7 +489,7 @@ function registerAlpineComponents() {
 
             formatedSignature += ")";
 
-            formatedSignature += this.visFilter.includes("typeHints")
+            formatedSignature += this.$store.vis.visFilter.includes("typeHints")
                 ? ` -> ${this.selectedItem.returns.type}`
                 : "";
 
@@ -415,8 +499,9 @@ function registerAlpineComponents() {
             const allParams = this.selectedItem?.parameters ?? [];
             const predicat = (p) => {
                 return (
-                    this.visFilter.includes("optParams") ||
-                    (!this.visFilter.includes("optParams") && p.required)
+                    this.$store.vis.visFilter.includes("optParams") ||
+                    (!this.$store.vis.visFilter.includes("optParams") &&
+                        p.required)
                 );
             };
             return allParams.filter((p) => predicat(p));

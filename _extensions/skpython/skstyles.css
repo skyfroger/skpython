@@ -98,6 +98,10 @@
     filter: brightness(110%);
 }
 
+.sk__editor__func code {
+    cursor: pointer;
+}
+
 button.run {
     padding: 0 0.5em;
     background-color: var(--success-color-sk);
