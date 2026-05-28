@@ -18,6 +18,13 @@ local function writeEnvironments()
       scripts = {
         { path = "sort-alpine.min.js", afterBody = "true" },
         { path = "alpine.min.js", afterBody = "true" },
+      }
+    })
+
+    quarto.doc.add_html_dependency({
+      name = "prism",
+      version = "1",
+      scripts = {
         { path = "prism.js", afterBody = "true" }
       }
     })
