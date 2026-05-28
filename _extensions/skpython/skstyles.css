@@ -227,10 +227,9 @@ button.general {
     background: var(--color-surface);
     padding: var(--space-lg);
     border-radius: var(--radius);
-    width: 70%;
-    height: 70vh;
-    min-width: 320px;
-    min-height: 300px;
+    min-width: min(60ch, 95vw);
+    max-width: min(90ch, 95vw);
+    max-height: 95vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 24px rgb(0 0 0 / 15%);

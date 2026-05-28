@@ -112,6 +112,9 @@ end
 function createSkAPISearch(div)
   local content = {}       -- содержимое блока
 
+  table.insert(content, div) -- сохраняем исходную разметку
+
+  -- добавляем поле для поиска
   table.insert(content,
         pandoc.RawBlock("html",[[
     <div x-data="apiSearch">
