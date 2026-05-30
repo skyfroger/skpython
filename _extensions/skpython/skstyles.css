@@ -198,21 +198,40 @@ button.general {
     --modal-height: 70vh;
 }
 
-.sk-api-search__formated {
+.search__form {
     display: flex;
     flex-direction: column;
     width: 100%;
+    position: relative;
 }
 
-.sk-api-search__formated input[type="text"] {
+.search__form::before {
+    content: "";
+    position: absolute;
+    left: 0.6rem;
+    top: 0.55rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwYTBhMGEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZWFyY2gtaWNvbiBsdWNpZGUtc2VhcmNoIj48cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0Ii8+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjwvc3ZnPg==");
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.search__form input[type="text"] {
     display: inline-block;
     outline: none;
     border: 2px solid rgb(203, 203, 203);
     border-radius: var(--radius);
-    padding: 0.25rem;
+    padding: 0.25rem 0.5rem 0.25rem 2rem;
     width: 100%;
     text-align: start;
     transition: border-color 0.4s ease;
+}
+
+.sk-api-search__formated input[type="text"]:focus {
+    border-color: rgb(100, 100, 100);
 }
 
 .modal-overlay {

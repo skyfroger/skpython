@@ -154,7 +154,7 @@ local function addModal()
                   </div>
                   <div class="api__example__output" x-show="example.output !== ''">
                     <span class="vertical-text">Вывод</span>
-                    <code x-text="example.output"></code>
+                    <code class="language-markdown" x-text="example.output"></code>
                   </div>
                   
                 </div>
@@ -256,7 +256,7 @@ function createSkAPISearch(div)
   table.insert(content,
         pandoc.RawBlock("html",[[
     <div x-data="apiSearch">
-      <div class="search-form">
+      <div class="search__form">
         <input
           type="text"
           placeholder="Введите название функции или метода"
