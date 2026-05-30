@@ -17,12 +17,70 @@ function registerAlpineComponents() {
 
     Alpine.store("vis", {
         visFilter: savedFilter,
+        showModal: false,
+        selectedItem: null,
     });
 
     Alpine.effect(() => {
         const filter = Alpine.store("vis").visFilter;
         localStorage.setItem("vis-filter", JSON.stringify(filter));
     });
+
+    Alpine.data("docModal", () => ({
+        closeModal() {
+            this.$store.vis.showModal = false;
+            this.$store.vis.selectedItem = null;
+        },
+        paramFormat(paramObj) {
+            if (
+                !this.$store.vis.visFilter.includes("optParams") &&
+                !paramObj.required
+            )
+                return ""; // скрываем необязательные параметры при необходимости
+
+            const typeHint = this.$store.vis.visFilter.includes("typeHints")
+                ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
+                : "";
+            const defaultValue = paramObj.default_value
+                ? ` = ${paramObj.default_value}`
+                : "";
+            const formatedParam = paramObj.name + typeHint + defaultValue;
+            return formatedParam;
+        },
+        signature(selectedItem) {
+            let = formatedSignature = selectedItem.name + "(";
+
+            const formatedParams = selectedItem.parameters.map((param) =>
+                this.paramFormat(param),
+            );
+            const notEmptyformatedParams = formatedParams.filter(
+                (param) => param !== "",
+            );
+            formatedSignature += notEmptyformatedParams.join(", ");
+
+            formatedSignature += ")";
+
+            formatedSignature += this.$store.vis.visFilter.includes("typeHints")
+                ? ` -> ${selectedItem.returns.type}`
+                : "";
+
+            return formatedSignature;
+        },
+        parametersFilter(selectedItem) {
+            const allParams = selectedItem?.parameters ?? [];
+            const predicat = (p) => {
+                return (
+                    this.$store.vis.visFilter.includes("optParams") ||
+                    (!this.$store.vis.visFilter.includes("optParams") &&
+                        p.required)
+                );
+            };
+            return allParams.filter((p) => predicat(p));
+        },
+        returnFormat(selectedItem) {
+            return selectedItem.returns.type;
+        },
+    }));
 
     Alpine.data("skulptEditor", (editorId) => ({
         editorId: editorId,
@@ -62,58 +120,6 @@ function registerAlpineComponents() {
         inputResolve: null,
         activeInputElement: null,
         functionNames: [],
-        showModal: false,
-        selectedItem: null,
-
-        paramFormat(paramObj) {
-            if (
-                !this.$store.vis.visFilter.includes("optParams") &&
-                !paramObj.required
-            )
-                return ""; // скрываем необязательные параметры при необходимости
-
-            const typeHint = this.$store.vis.visFilter.includes("typeHints")
-                ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
-                : "";
-            const defaultValue = paramObj.default_value
-                ? ` = ${paramObj.default_value}`
-                : "";
-            const formatedParam = paramObj.name + typeHint + defaultValue;
-            return formatedParam;
-        },
-        signature() {
-            let = formatedSignature = this.selectedItem.name + "(";
-
-            const formatedParams = this.selectedItem.parameters.map((param) =>
-                this.paramFormat(param),
-            );
-            const notEmptyformatedParams = formatedParams.filter(
-                (param) => param !== "",
-            );
-            formatedSignature += notEmptyformatedParams.join(", ");
-
-            formatedSignature += ")";
-
-            formatedSignature += this.$store.vis.visFilter.includes("typeHints")
-                ? ` -> ${this.selectedItem.returns.type}`
-                : "";
-
-            return formatedSignature;
-        },
-        parametersFilter() {
-            const allParams = this.selectedItem?.parameters ?? [];
-            const predicat = (p) => {
-                return (
-                    this.$store.vis.visFilter.includes("optParams") ||
-                    (!this.$store.vis.visFilter.includes("optParams") &&
-                        p.required)
-                );
-            };
-            return allParams.filter((p) => predicat(p));
-        },
-        returnFormat() {
-            return this.selectedItem.returns.type;
-        },
 
         // Инициализация
         init() {
@@ -137,15 +143,15 @@ function registerAlpineComponents() {
 
         openModal(item) {
             const index = window.__NAMES__.indexOf(item);
-            this.selectedItem = window.__DOCS__[index];
-            this.showModal = true;
+            this.$store.vis.selectedItem = window.__DOCS__[index];
+            this.$store.vis.showModal = true;
             this.$nextTick(() => {
                 Prism.highlightAll();
             });
         },
         closeModal() {
-            this.showModal = false;
-            this.selectedItem = null;
+            this.$store.vis.showModal = false;
+            this.$store.vis.selectedItem = null;
         },
 
         initAce() {
@@ -432,8 +438,6 @@ function registerAlpineComponents() {
             threshold: 0.3,
             includeScore: true,
         }),
-        showModal: false,
-        selectedItem: null,
         init() {
             this.$watch("$store.vis.visFilter", (value) => {
                 Prism.highlightAll();
@@ -450,64 +454,15 @@ function registerAlpineComponents() {
             });
         },
         openModal(item) {
-            this.selectedItem = item;
-            this.showModal = true;
+            this.$store.vis.selectedItem = item;
+            this.$store.vis.showModal = true;
             this.$nextTick(() => {
                 Prism.highlightAll();
             });
         },
         closeModal() {
-            this.showModal = false;
-            this.selectedItem = null;
-        },
-        paramFormat(paramObj) {
-            if (
-                !this.$store.vis.visFilter.includes("optParams") &&
-                !paramObj.required
-            )
-                return ""; // скрываем необязательные параметры при необходимости
-
-            const typeHint = this.$store.vis.visFilter.includes("typeHints")
-                ? `${paramObj.type_hint ? ": " + paramObj.type_hint : ""}`
-                : "";
-            const defaultValue = paramObj.default_value
-                ? ` = ${paramObj.default_value}`
-                : "";
-            const formatedParam = paramObj.name + typeHint + defaultValue;
-            return formatedParam;
-        },
-        signature() {
-            let = formatedSignature = this.selectedItem.name + "(";
-
-            const formatedParams = this.selectedItem.parameters.map((param) =>
-                this.paramFormat(param),
-            );
-            const notEmptyformatedParams = formatedParams.filter(
-                (param) => param !== "",
-            );
-            formatedSignature += notEmptyformatedParams.join(", ");
-
-            formatedSignature += ")";
-
-            formatedSignature += this.$store.vis.visFilter.includes("typeHints")
-                ? ` -> ${this.selectedItem.returns.type}`
-                : "";
-
-            return formatedSignature;
-        },
-        parametersFilter() {
-            const allParams = this.selectedItem?.parameters ?? [];
-            const predicat = (p) => {
-                return (
-                    this.$store.vis.visFilter.includes("optParams") ||
-                    (!this.$store.vis.visFilter.includes("optParams") &&
-                        p.required)
-                );
-            };
-            return allParams.filter((p) => predicat(p));
-        },
-        returnFormat() {
-            return this.selectedItem.returns.type;
+            this.$store.vis.showModal = false;
+            this.$store.vis.selectedItem = null;
         },
     }));
 }
