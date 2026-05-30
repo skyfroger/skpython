@@ -219,19 +219,24 @@ function registerAlpineComponents() {
                 function walk(node) {
                     if (!node || typeof node !== "object") return;
 
-                    // Вызов функции: Call(func=Name(id='foo'), ...)
-                    if (
-                        node._astname === "Call" &&
-                        node.func &&
-                        node.func._astname === "Name" &&
-                        node.func.id
-                    ) {
-                        const funcName = node.func.id.v;
-                        if (
-                            !names.includes(funcName) &&
-                            window.__NAMES__.includes(funcName)
-                        )
+                    if (node._astname === "Call" && node.func) {
+                        let funcName = null;
+
+                        // 1. Прямой вызов функции: foo()
+                        if (node.func._astname === "Name" && node.func.id) {
+                            funcName = node.func.id.v;
+                        }
+                        // 2. Вызов метода: obj.method(), a.b.c.method()
+                        else if (
+                            node.func._astname === "Attribute" &&
+                            node.func.attr
+                        ) {
+                            funcName = node.func.attr.v;
+                        }
+
+                        if (funcName && !names.includes(funcName)) {
                             names.push(funcName);
+                        }
                     }
 
                     for (var key in node) {
