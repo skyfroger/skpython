@@ -52,8 +52,24 @@ local function addModal()
       x-show="$store.vis.showModal"
       @keydown.escape.window="closeModal"
       @click.self="closeModal"
+      x-transition:enter="fade-enter"
+      x-transition:enter-start="fade-enter-start"
+      x-transition:enter-end="fade-enter-end"
+      x-transition:leave="fade-leave"
+      x-transition:leave-start="fade-leave-start"
+      x-transition:leave-end="fade-leave-end"
       x-cloak>
-        <div class="modal-content" @click.stop>
+        <div 
+        x-show="$store.vis.showModal" 
+        class="modal-content"
+        @click.stop
+        x-transition:enter="zoom-enter"
+        x-transition:enter-start="zoom-enter-start"
+        x-transition:enter-end="zoom-enter-end"
+        x-transition:leave="zoom-leave"
+        x-transition:leave-start="zoom-leave-start"
+        x-transition:leave-end="zoom-leave-end"
+        x-cloak>
           <div class="modal-card">
             <div class="modal-toolbar">
               <!-- <button @click="closeModal">Закрыть</button> -->

@@ -218,9 +218,7 @@ button.general {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--color-bg-overlay);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -228,6 +226,7 @@ button.general {
     overscroll-behavior: contain;
 }
 .modal-content {
+    position: relative;
     background: var(--color-surface);
     padding: var(--space-lg);
     border-radius: var(--radius);
@@ -237,6 +236,48 @@ button.general {
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 24px rgb(0 0 0 / 15%);
+}
+
+.fade-enter {
+    transition: opacity 0.3s ease-out;
+}
+.fade-enter-start {
+    opacity: 0;
+}
+.fade-enter-end {
+    opacity: 1;
+}
+.fade-leave {
+    transition: opacity 0.2s ease-in;
+}
+.fade-leave-start {
+    opacity: 1;
+}
+.fade-leave-end {
+    opacity: 0;
+}
+
+.zoom-enter {
+    transition: all 0.3s ease-out;
+}
+.zoom-enter-start {
+    opacity: 0;
+    transform: scale(0.9) translateY(1rem);
+}
+.zoom-enter-end {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+.zoom-leave {
+    transition: all 0.2s ease-in;
+}
+.zoom-leave-start {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+.zoom-leave-end {
+    opacity: 0;
+    transform: scale(0.95) translateY(1rem);
 }
 
 .modal-content ul {

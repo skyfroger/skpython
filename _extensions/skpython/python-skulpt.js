@@ -29,7 +29,8 @@ function registerAlpineComponents() {
     Alpine.data("docModal", () => ({
         closeModal() {
             this.$store.vis.showModal = false;
-            this.$store.vis.selectedItem = null;
+            // не очищаем объект перед закрытием модального окна
+            // this.$store.vis.selectedItem = null;
         },
         paramFormat(paramObj) {
             if (
@@ -148,10 +149,6 @@ function registerAlpineComponents() {
             this.$nextTick(() => {
                 Prism.highlightAll();
             });
-        },
-        closeModal() {
-            this.$store.vis.showModal = false;
-            this.$store.vis.selectedItem = null;
         },
 
         initAce() {
@@ -459,10 +456,6 @@ function registerAlpineComponents() {
             this.$nextTick(() => {
                 Prism.highlightAll();
             });
-        },
-        closeModal() {
-            this.$store.vis.showModal = false;
-            this.$store.vis.selectedItem = null;
         },
     }));
 }
