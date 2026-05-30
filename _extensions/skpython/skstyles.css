@@ -172,9 +172,9 @@ button.general {
     /* Цвета */
     --color-bg-overlay: rgb(0 0 0 / 50%);
     --color-surface: #ffffff;
-    --color-border-accent: #667bc6;
+    --color-border-accent: #60a561;
     --color-bg-muted: #d2d6ee;
-    --color-bg-soft: #8694c6;
+    --color-bg-soft: #c5e7c6;
     --color-text-inverse: #ffffff;
     --color-toolbar-idle: #1b3b6f;
     --color-toolbar-active: #000000;
@@ -233,7 +233,7 @@ button.general {
     border-radius: var(--radius);
     min-width: min(60ch, 95vw);
     max-width: min(90ch, 95vw);
-    max-height: 95vh;
+    max-height: 80vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 24px rgb(0 0 0 / 15%);
@@ -356,6 +356,12 @@ code[class*="language-"] {
 .blackbox > div {
     flex: 1 1 0;
     min-width: 0;
+}
+
+.blackbox code {
+    background-color: transparent !important;
+    color: black;
+    font-weight: 600;
 }
 
 .blackbox__input li {
