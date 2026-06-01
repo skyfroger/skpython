@@ -198,11 +198,16 @@ button.general {
     --modal-height: 70vh;
 }
 
+.sk-api-search__formated {
+    position: relative;
+}
+
 .search__form {
     display: flex;
     flex-direction: column;
     width: 100%;
     position: relative;
+    margin-bottom: var(--space-sm);
 }
 
 .search__form::before {
@@ -314,16 +319,28 @@ button.general {
     overflow: auto;
 }
 
+.api__suggestions {
+    position: absolute;
+    margin-top: var(--space-sm);
+    top: 100%; /* прямо под полем ввода */
+    left: 0;
+    right: 0;
+    z-index: 100; /* выше остальных элементов страницы */
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 .api__suggestions__item {
     padding: var(--space-sm);
-    margin-top: var(--space-sm);
     cursor: pointer;
-    border-radius: var(--radius);
-    transition: box-shadow 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .api__suggestions__item:hover {
-    box-shadow: 0 4px 24px rgb(0 0 0 / 15%);
+    background-color: #60a56126;
 }
 
 .api__example {

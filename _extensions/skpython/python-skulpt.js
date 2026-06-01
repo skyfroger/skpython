@@ -468,6 +468,9 @@ function registerAlpineComponents() {
             this.$store.vis.selectedItem = item;
             this.$store.vis.showModal = true;
             this.$nextTick(() => {
+                // сброс результатов происка после открытия модального окна
+                this.query = "";
+                this.results = [];
                 Prism.highlightAll();
             });
         },
