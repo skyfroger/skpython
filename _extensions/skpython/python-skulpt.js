@@ -27,6 +27,11 @@ function registerAlpineComponents() {
     });
 
     Alpine.data("docModal", () => ({
+        init() {
+            this.$watch("$store.vis.visFilter", (value) => {
+                Prism.highlightAll();
+            });
+        },
         closeModal() {
             this.$store.vis.showModal = false;
             // не очищаем объект перед закрытием модального окна
@@ -222,11 +227,11 @@ function registerAlpineComponents() {
                     if (node._astname === "Call" && node.func) {
                         let funcName = null;
 
-                        // 1. Прямой вызов функции: foo()
+                        // вызов функции
                         if (node.func._astname === "Name" && node.func.id) {
                             funcName = node.func.id.v;
                         }
-                        // 2. Вызов метода: obj.method(), a.b.c.method()
+                        // вызов метода
                         else if (
                             node.func._astname === "Attribute" &&
                             node.func.attr
@@ -234,7 +239,11 @@ function registerAlpineComponents() {
                             funcName = node.func.attr.v;
                         }
 
-                        if (funcName && !names.includes(funcName)) {
+                        if (
+                            funcName &&
+                            !names.includes(funcName) &&
+                            window.__NAMES__.includes(funcName)
+                        ) {
                             names.push(funcName);
                         }
                     }
